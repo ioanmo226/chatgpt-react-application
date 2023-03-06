@@ -2,17 +2,24 @@ import {useState} from 'react';
 import axios from "axios";
 import PromptInput from "../PromptInput/PromptInput";
 import './App.css';
+import Select from 'react-select';
 import {ResponseInterface} from "../PromptResponseList/response-interface";
 import PromptResponseList from "../PromptResponseList/PromptResponseList";
 
 type ModelValueType = 'gpt' | 'codex' | 'image';
+
+const selectOptions: any = [
+  { value: 'gpt', label: 'GPT-3 (Understand and generate natural language )' },
+  { value: 'codex', label: 'Codex (Understand and generate code, including translating natural language to code)' },
+  { value: 'image', label: 'Create Image (Create AI image using DALL·E models)' },
+]
 const App = () => {
 
   const [responseList, setResponseList] = useState<ResponseInterface[]>([]);
   const [prompt, setPrompt] = useState<string>('');
   const [promptToRetry, setPromptToRetry] = useState<string | null>(null);
   const [uniqueIdToRetry, setUniqueIdToRetry] = useState<string | null>(null);
-  const [modelValue, setModelValue] = useState<ModelValueType>('gpt');
+  const [modelValue, setModelValue] = useState<ModelValueType>(selectOptions[0]);
   const [isLoading, setIsLoading] = useState(false);
   let loadInterval: number | undefined;
 
@@ -154,14 +161,23 @@ const App = () => {
         </div>
         )
       }
+
       <div id="model-select-container">
-        <label htmlFor="model-select">Select model:</label>
-        <select id="model-select" value={modelValue} onChange={(event) => setModelValue(event.target.value as ModelValueType)}>
-          <option value="gpt">GPT-3 (Understand and generate natural language )</option>
-          <option value="codex">Codex (Understand and generate code, including translating natural language to code)
-          </option>
-          <option value="image">Create Image (Create AI image using DALL·E models)</option>
-        </select>
+        <Select
+          placeholder="Select model:"
+          defaultValue={modelValue}
+          onChange={(model) => setModelValue(model as ModelValueType)}
+          options={selectOptions}
+          theme={(theme) => ({
+            ...theme,
+            borderRadius: 0,
+            colors: {
+              ...theme.colors,
+              primary25: 'dangerLight',
+              primary: 'danger',
+            },
+          })}
+        />
       </div>
       <div id="input-container">
         <PromptInput
